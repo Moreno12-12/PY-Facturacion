@@ -1,0 +1,4 @@
+from src.application.services.persona_service import PersonaService
+from src.application.services.producto_service import ProductoService
+from src.application.services.factura_service import FacturaService
+from src.application.services.recomendacion_service import RecomendacionService

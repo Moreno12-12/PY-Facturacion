@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-box-seam"></i> {{ titulo }}</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" value="{{ producto.nombre if producto else '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Categoria</label>
+                    <input type="text" name="categoria" class="form-control" value="{{ producto.categoria if producto else '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Precio</label>
+                    <input type="number" name="precio" class="form-control" value="{{ producto.precio if producto else '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Stock</label>
+                    <input type="number" name="stock" class="form-control" value="{{ producto.stock if producto else '0' }}" required>
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label">Descripcion</label>
+                    <input type="text" name="descripcion" class="form-control" value="{{ producto.descripcion if producto else '' }}">
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Tags (separados por coma)</label>
+                    <input type="text" name="tags" class="form-control" value="{{ producto.tags|join(', ') if producto and producto.tags else '' }}" placeholder="ej: basico, despensa, carbohidrato">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Guardar</button>
+                <a href="/productos" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

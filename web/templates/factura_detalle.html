@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Factura #{{ factura.id }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="/facturas" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Informacion de Factura</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>ID:</strong> {{ factura.id }}</p>
+                <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
+                <p><strong>Fecha:</strong> {{ factura.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>Estado:</strong>
+                    {% if factura.estado == 'activa' %}
+                    <span class="badge bg-success">Activa</span>
+                    {% else %}
+                    <span class="badge bg-danger">Anulada</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Total</h5>
+            </div>
+            <div class="card-body text-center">
+                <h2 class="text-success">$ {{ "{:,.0f}".format(factura.total) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Detalle de Productos</h5>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unit.</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in detalles %}
+                <tr>
+                    <td>{{ d.producto_nombre }}</td>
+                    <td>{{ d.cantidad }}</td>
+                    <td>$ {{ "{:,.0f}".format(d.precio_unitario) }}</td>
+                    <td class="fw-bold">$ {{ "{:,.0f}".format(d.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

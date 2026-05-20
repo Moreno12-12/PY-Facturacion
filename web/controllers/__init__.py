@@ -1,0 +1,4 @@
+from web.controllers.persona_controller import create_persona_controller
+from web.controllers.producto_controller import create_producto_controller
+from web.controllers.factura_controller import create_factura_controller
+from web.controllers.recomendacion_controller import create_recomendacion_controller

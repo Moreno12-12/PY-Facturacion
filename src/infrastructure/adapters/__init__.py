@@ -1,0 +1,4 @@
+from src.infrastructure.adapters.cassandra_persona_repository import CassandraPersonaRepository
+from src.infrastructure.adapters.mongo_producto_repository import MongoProductoRepository
+from src.infrastructure.adapters.mysql_factura_repository import MySQLFacturaRepository
+from src.infrastructure.adapters.neo4j_recomendacion_repository import Neo4jRecomendacionRepository

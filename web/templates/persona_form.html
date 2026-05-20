@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-person-plus"></i> {{ titulo }}</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" value="{{ persona.nombre if persona else '' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" name="apellido" class="form-control" value="{{ persona.apellido if persona else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-select" required>
+                        <option value="cliente" {% if persona and persona.tipo == 'cliente' %}selected{% endif %}>Cliente</option>
+                        <option value="empleado" {% if persona and persona.tipo == 'empleado' %}selected{% endif %}>Empleado</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ persona.email if persona else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Telefono</label>
+                    <input type="text" name="telefono" class="form-control" value="{{ persona.telefono if persona else '' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Barrio</label>
+                    <input type="text" name="barrio" class="form-control" value="{{ persona.barrio if persona else '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Municipio</label>
+                    <input type="text" name="municipio" class="form-control" value="{{ persona.municipio if persona else '' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Genero</label>
+                    <select name="genero" class="form-select" required>
+                        <option value="M" {% if persona and persona.genero == 'M' %}selected{% endif %}>Masculino</option>
+                        <option value="F" {% if persona and persona.genero == 'F' %}selected{% endif %}>Femenino</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estrato</label>
+                    <select name="estrato" class="form-select" required>
+                        {% for i in range(1, 7) %}
+                        <option value="{{ i }}" {% if persona and persona.estrato == i %}selected{% endif %}>{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Guardar</button>
+                <a href="/personas" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

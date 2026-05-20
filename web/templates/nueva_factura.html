@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Factura{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-receipt"></i> Nueva Factura</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" id="facturaForm">
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Cliente</label>
+                    <select name="persona_id" class="form-select" required>
+                        <option value="">Seleccione un cliente...</option>
+                        {% for c in clientes %}
+                        <option value="{{ c.id }}">{{ c.nombre }} {{ c.apellido }} - {{ c.barrio }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="mb-3">Productos</h5>
+            <div id="productosContainer">
+                <div class="row g-2 producto-row mb-2">
+                    <div class="col-md-5">
+                        <select name="producto_id" class="form-select" required>
+                            <option value="">Seleccione producto...</option>
+                            {% for p in productos %}
+                            <option value="{{ p.id }}" data-precio="{{ p.precio }}">{{ p.nombre }} - ${{ "{:,.0f}".format(p.precio) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="cantidad" class="form-control" placeholder="Cant." min="1" value="1" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control subtotal" readonly placeholder="Subtotal">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-remove w-100" onclick="removeRow(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-outline-primary mb-3" onclick="addRow()">
+                <i class="bi bi-plus-circle"></i> Agregar Producto
+            </button>
+
+            <div class="text-end">
+                <h4>Total: $ <span id="totalDisplay">0</span></h4>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-check-circle"></i> Generar Factura</button>
+                <a href="/facturas" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left"></i> Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function addRow() {
+    const container = document.getElementById('productosContainer');
+    const firstRow = container.querySelector('.producto-row');
+    const newRow = firstRow.cloneNode(true);
+    newRow.querySelectorAll('input').forEach(i => i.value = '');
+    newRow.querySelector('select').selectedIndex = 0;
+    container.appendChild(newRow);
+    attachEvents();
+}
+
+function removeRow(btn) {
+    const container = document.getElementById('productosContainer');
+    if (container.querySelectorAll('.producto-row').length > 1) {
+        btn.closest('.producto-row').remove();
+        calculateTotal();
+    }
+}
+
+function attachEvents() {
+    document.querySelectorAll('.producto-row select, .producto-row input[name="cantidad"]').forEach(el => {
+        el.removeEventListener('change', calculateTotal);
+        el.addEventListener('change', calculateTotal);
+    });
+}
+
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('.producto-row').forEach(row => {
+        const select = row.querySelector('select[name="producto_id"]');
+        const cantidad = parseInt(row.querySelector('input[name="cantidad"]').value) || 0;
+        const option = select.options[select.selectedIndex];
+        const precio = option ? parseFloat(option.dataset.precio) || 0 : 0;
+        const subtotal = cantidad * precio;
+        row.querySelector('.subtotal').value = '$ ' + subtotal.toLocaleString();
+        total += subtotal;
+    });
+    document.getElementById('totalDisplay').textContent = total.toLocaleString();
+}
+
+attachEvents();
+</script>
+{% endblock %}

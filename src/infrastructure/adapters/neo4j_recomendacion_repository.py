@@ -14,20 +14,24 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         if self.driver is None:
             return []
 
+        cliente_id_str = str(cliente_id)
+
         with self.driver.session() as session:
             result = session.run("""
-                MATCH (p:Persona {id: $id})-[:COMPRO]->(prod:Producto)<-[:COMPRO]-(similar:Persona)
+                MATCH (similar:Persona)-[:COMPRO]->(prod:Producto)
                 WHERE similar.id <> $id
                 AND NOT EXISTS {
-                    MATCH (p)-[:COMPRO]->(prod2:Producto)
-                    WHERE prod2.id = prod.id
+                    MATCH (p:Persona {id: $id})-[:COMPRO]->(prod:Producto)
+                }
+                AND EXISTS {
+                    MATCH (p:Persona {id: $id})-[:VIVE_EN|:MISMO_ESTRATO|:COMPARTEN_GENERO]-(similar)
                 }
                 WITH similar, prod, count(*) as score
                 ORDER BY score DESC
                 LIMIT 5
                 RETURN prod.id as id, prod.nombre as nombre, prod.categoria as categoria,
                        prod.precio as precio, score
-            """, id=cliente_id)
+            """, id=cliente_id_str)
 
             recs = [dict(r) for r in result]
             recomendaciones = []
@@ -49,6 +53,8 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         if self.driver is None:
             return []
 
+        cliente_id_str = str(cliente_id)
+
         with self.driver.session() as session:
             result = session.run("""
                 MATCH (p:Persona {id: $id})-[:VIVE_EN|:MISMO_ESTRATO|:COMPARTEN_GENERO]-(similar:Persona)
@@ -58,7 +64,7 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
                 LIMIT 6
                 RETURN similar.nombre as nombre, similar.apellido as apellido,
                        similar.barrio as barrio, similar.estrato as estrato, conexion
-            """, id=cliente_id)
+            """, id=cliente_id_str)
 
             return [ClienteSimilar(
                 nombre=r['nombre'],
@@ -72,12 +78,14 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         if self.driver is None:
             return []
 
+        cliente_id_str = str(cliente_id)
+
         with self.driver.session() as session:
             result = session.run("""
                 MATCH (p:Persona {id: $id})-[c:COMPRO]->(prod:Producto)
                 RETURN prod.nombre as nombre, c.cantidad as cantidad
                 ORDER BY c.cantidad DESC
-            """, id=cliente_id)
+            """, id=cliente_id_str)
 
             return [dict(r) for r in result]
 
@@ -85,11 +93,13 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         if self.driver is None:
             return None
 
+        cliente_id_str = str(cliente_id)
+
         with self.driver.session() as session:
             result = session.run("""
                 MATCH (p:Persona {id: $id})
                 RETURN p
-            """, id=cliente_id)
+            """, id=cliente_id_str)
 
             record = result.single()
             if record:
@@ -107,11 +117,12 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
 
     def _obtener_razones(self, session, cliente_id: str, producto_id: str) -> list:
         razones = []
+        cliente_id_str = str(cliente_id)
 
         barrio_result = session.run("""
             MATCH (p:Persona {id: $id})-[:VIVE_EN]->(b:Barrio)<-[:VIVE_EN]-(similar:Persona)-[:COMPRO]->(prod:Producto {id: $prod_id})
             RETURN count(similar) as count
-        """, id=cliente_id, prod_id=producto_id)
+        """, id=cliente_id_str, prod_id=producto_id)
         barrio_rec = barrio_result.single()
         if barrio_rec and barrio_rec['count'] > 0:
             razones.append(f"Comprado por {barrio_rec['count']} persona(s) de tu mismo barrio")
@@ -119,7 +130,7 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         estrato_result = session.run("""
             MATCH (p:Persona {id: $id})-[:MISMO_ESTRATO]-(similar:Persona)-[:COMPRO]->(prod:Producto {id: $prod_id})
             RETURN count(similar) as count
-        """, id=cliente_id, prod_id=producto_id)
+        """, id=cliente_id_str, prod_id=producto_id)
         estrato_rec = estrato_result.single()
         if estrato_rec and estrato_rec['count'] > 0:
             razones.append(f"Popular en personas de estrato similar ({estrato_rec['count']})")
@@ -127,7 +138,7 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         genero_result = session.run("""
             MATCH (p:Persona {id: $id})-[:COMPARTEN_GENERO]-(similar:Persona)-[:COMPRO]->(prod:Producto {id: $prod_id})
             RETURN count(similar) as count
-        """, id=cliente_id, prod_id=producto_id)
+        """, id=cliente_id_str, prod_id=producto_id)
         genero_rec = genero_result.single()
         if genero_rec and genero_rec['count'] > 0:
             razones.append(f"Comprado por personas del mismo genero ({genero_rec['count']})")
@@ -135,7 +146,7 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
         categoria_result = session.run("""
             MATCH (p:Persona {id: $id})-[:COMPRO]->(otro:Producto)-[:COMPARTEN_CATEGORIA]-(prod:Producto {id: $prod_id})
             RETURN count(otro) as count
-        """, id=cliente_id, prod_id=producto_id)
+        """, id=cliente_id_str, prod_id=producto_id)
         categoria_rec = categoria_result.single()
         if categoria_rec and categoria_rec['count'] > 0:
             razones.append(f"Relacionado con productos que has comprado ({categoria_rec['count']})")

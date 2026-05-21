@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Factura #{{ factura.id }}{% endblock %}
+{% block title %}Factura #{{ factura.factura_id }}{% endblock %}
 
 {% block content %}
 <div class="mb-4">
@@ -14,9 +14,9 @@
                 <h5 class="mb-0">Informacion de Factura</h5>
             </div>
             <div class="card-body">
-                <p><strong>ID:</strong> {{ factura.id }}</p>
-                <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
-                <p><strong>Fecha:</strong> {{ factura.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>ID:</strong> {{ factura.factura_id }}</p>
+                <p><strong>Cliente:</strong> {{ factura.cliente_nombre }} {{ factura.cliente_apellido }}</p>
+                <p><strong>Fecha:</strong> {{ factura.fecha }}</p>
                 <p><strong>Estado:</strong>
                     {% if factura.estado == 'activa' %}
                     <span class="badge bg-success">Activa</span>
@@ -54,7 +54,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for d in detalles %}
+                {% for d in factura.detalles %}
                 <tr>
                     <td>{{ d.producto_nombre }}</td>
                     <td>{{ d.cantidad }}</td>

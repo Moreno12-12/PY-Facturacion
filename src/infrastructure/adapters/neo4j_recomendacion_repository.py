@@ -193,13 +193,13 @@ class Neo4jRecomendacionRepository(RecomendacionRepository):
 
             session.run("""
                 MATCH (p1:Persona {id: $id}), (p2:Persona)
-                WHERE p1.rango_edad = p2.rango_edad AND p1.id < p2.id
+                WHERE p1.rango_edad = p2.rango_edad AND p1.id <> p2.id
                 MERGE (p1)-[:MISMO_RANGO_EDAD]-(p2)
             """, id=str(persona.id))
 
             session.run("""
                 MATCH (p1:Persona {id: $id}), (p2:Persona)
-                WHERE p1.estrato = p2.estrato AND p1.id < p2.id
+                WHERE p1.estrato = p2.estrato AND p1.id <> p2.id
                 MERGE (p1)-[:MISMO_ESTRATO]-(p2)
             """, id=str(persona.id))
 

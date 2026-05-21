@@ -281,14 +281,14 @@ def seed_neo4j():
         # Create MISMO_RANGO_EDAD relationships
         session.run("""
             MATCH (p1:Persona), (p2:Persona)
-            WHERE p1.rango_edad = p2.rango_edad AND p1.id < p2.id
+            WHERE p1.rango_edad = p2.rango_edad AND p1.id <> p2.id
             MERGE (p1)-[:MISMO_RANGO_EDAD]-(p2)
         """)
         
         # Create MISMO_ESTRATO relationships
         session.run("""
             MATCH (p1:Persona), (p2:Persona)
-            WHERE p1.estrato = p2.estrato AND p1.id < p2.id
+            WHERE p1.estrato = p2.estrato AND p1.id <> p2.id
             MERGE (p1)-[:MISMO_ESTRATO]-(p2)
         """)
         

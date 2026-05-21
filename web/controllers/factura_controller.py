@@ -81,4 +81,10 @@ def create_factura_controller(factura_service: FacturaService, persona_service: 
         flash('Factura anulada.', 'warning')
         return redirect(url_for('facturas.index'))
 
+    @factura_bp.route('/eliminar/<int:factura_id>')
+    def eliminar(factura_id):
+        factura_service.eliminar(factura_id)
+        flash('Factura eliminada.', 'info')
+        return redirect(url_for('facturas.index'))
+
     return factura_bp

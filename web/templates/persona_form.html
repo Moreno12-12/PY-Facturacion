@@ -41,11 +41,8 @@
                     <input type="text" name="municipio" class="form-control" value="{{ persona.municipio if persona else '' }}" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Genero</label>
-                    <select name="genero" class="form-select" required>
-                        <option value="M" {% if persona and persona.genero == 'M' %}selected{% endif %}>Masculino</option>
-                        <option value="F" {% if persona and persona.genero == 'F' %}selected{% endif %}>Femenino</option>
-                    </select>
+                    <label class="form-label">Edad</label>
+                    <input type="number" name="edad" class="form-control" value="{{ persona.edad if persona else '' }}" min="1" max="120" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Estrato</label>

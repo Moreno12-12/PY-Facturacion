@@ -58,6 +58,14 @@ class MySQLFacturaRepository(FacturaRepository):
         cursor.close()
         return True
 
+    def eliminar(self, factura_id: int) -> bool:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM detalle_factura WHERE factura_id = %s", (factura_id,))
+        cursor.execute("DELETE FROM factura WHERE id = %s", (factura_id,))
+        self.connection.commit()
+        cursor.close()
+        return True
+
     def get_total_general(self) -> float:
         cursor = self.connection.cursor(dictionary=True)
         cursor.execute("SELECT COALESCE(SUM(total), 0) as total FROM factura WHERE estado = 'activa'")

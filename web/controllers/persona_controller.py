@@ -23,7 +23,7 @@ def create_persona_controller(service: PersonaService):
                 telefono=request.form.get('telefono'),
                 barrio=request.form.get('barrio'),
                 municipio=request.form.get('municipio'),
-                genero=request.form.get('genero'),
+                edad=int(request.form.get('edad', 18)),
                 estrato=int(request.form.get('estrato', 1))
             )
             service.crear(dto)
@@ -43,7 +43,7 @@ def create_persona_controller(service: PersonaService):
                 telefono=request.form.get('telefono'),
                 barrio=request.form.get('barrio'),
                 municipio=request.form.get('municipio'),
-                genero=request.form.get('genero'),
+                edad=int(request.form.get('edad', 18)),
                 estrato=int(request.form.get('estrato', 1))
             )
             service.actualizar(dto)

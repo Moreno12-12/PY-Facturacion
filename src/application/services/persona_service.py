@@ -9,8 +9,9 @@ from cassandra.util import uuid_from_time
 
 class PersonaService:
 
-    def __init__(self, repository: PersonaRepository):
+    def __init__(self, repository: PersonaRepository, neo4j_repo=None):
         self.repository = repository
+        self.neo4j_repo = neo4j_repo
 
     def obtener_todas(self) -> list[Persona]:
         return self.repository.get_all()
@@ -24,13 +25,21 @@ class PersonaService:
     def crear(self, dto: CrearPersonaDTO) -> Persona:
         persona_id = uuid_from_time(time.time())
         persona = dto.to_persona(persona_id)
-        return self.repository.create(persona)
+        resultado = self.repository.create(persona)
+        if self.neo4j_repo and persona.tipo == 'cliente':
+            self.neo4j_repo.sincronizar_persona(persona)
+        return resultado
 
     def actualizar(self, dto: ActualizarPersonaDTO) -> bool:
         persona = dto.to_persona()
-        return self.repository.update(persona)
+        resultado = self.repository.update(persona)
+        if self.neo4j_repo and persona.tipo == 'cliente':
+            self.neo4j_repo.sincronizar_persona(persona)
+        return resultado
 
     def eliminar(self, persona_id: str) -> bool:
+        if self.neo4j_repo:
+            self.neo4j_repo.eliminar_persona_neo4j(persona_id)
         return self.repository.delete(UUID(persona_id))
 
     def contar(self) -> int:

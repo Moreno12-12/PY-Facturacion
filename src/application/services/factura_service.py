@@ -9,9 +9,10 @@ from src.application.dto.factura_dto import CrearFacturaDTO, FacturaDetalleViewD
 
 class FacturaService:
 
-    def __init__(self, factura_repo: FacturaRepository, producto_repo: ProductoRepository):
+    def __init__(self, factura_repo: FacturaRepository, producto_repo: ProductoRepository, neo4j_repo=None):
         self.factura_repo = factura_repo
         self.producto_repo = producto_repo
+        self.neo4j_repo = neo4j_repo
 
     def obtener_todas(self) -> list[Factura]:
         return self.factura_repo.get_all()
@@ -69,10 +70,21 @@ class FacturaService:
                 total += detalle.subtotal
 
         factura.total = total
-        return self.factura_repo.create(factura, detalles)
+        factura_id = self.factura_repo.create(factura, detalles)
+        if self.neo4j_repo:
+            productos_info = {}
+            for item in dto.items:
+                prod = self.producto_repo.get_by_id(item.producto_id)
+                if prod:
+                    productos_info[item.producto_id] = prod
+            self.neo4j_repo.sincronizar_compras(factura.persona_id, detalles, productos_info)
+        return factura_id
 
     def anular(self, factura_id: int) -> bool:
         return self.factura_repo.anular(factura_id)
+
+    def eliminar(self, factura_id: int) -> bool:
+        return self.factura_repo.eliminar(factura_id)
 
     def obtener_total_general(self) -> float:
         return self.factura_repo.get_total_general()

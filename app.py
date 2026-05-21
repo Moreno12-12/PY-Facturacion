@@ -48,9 +48,9 @@ def create_app() -> Flask:
     recomendacion_repo = Neo4jRecomendacionRepository()
 
     # Initialize services (application layer)
-    persona_service = PersonaService(persona_repo)
+    persona_service = PersonaService(persona_repo, recomendacion_repo)
     producto_service = ProductoService(producto_repo)
-    factura_service = FacturaService(factura_repo, producto_repo)
+    factura_service = FacturaService(factura_repo, producto_repo, recomendacion_repo)
     recomendacion_service = RecomendacionService(recomendacion_repo)
 
     # Register controllers (web layer)

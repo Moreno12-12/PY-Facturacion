@@ -12,7 +12,7 @@ class Persona:
     telefono: Optional[str] = None
     barrio: Optional[str] = None
     municipio: Optional[str] = None
-    genero: Optional[str] = None
+    edad: Optional[int] = None
     estrato: Optional[int] = None
 
     @property

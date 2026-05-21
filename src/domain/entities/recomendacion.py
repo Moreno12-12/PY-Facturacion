@@ -20,6 +20,7 @@ class ClienteSimilar:
     apellido: str
     barrio: str
     estrato: int
+    edad: int = None
     conexion: int = 0
 
     @property

@@ -11,7 +11,7 @@ class CrearPersonaDTO:
     telefono: Optional[str] = None
     barrio: Optional[str] = None
     municipio: Optional[str] = None
-    genero: Optional[str] = None
+    edad: Optional[str] = None
     estrato: Optional[int] = None
 
     def to_persona(self, persona_id: UUID):
@@ -25,7 +25,7 @@ class CrearPersonaDTO:
             telefono=self.telefono,
             barrio=self.barrio,
             municipio=self.municipio,
-            genero=self.genero,
+            edad=self.edad,
             estrato=self.estrato
         )
 
@@ -39,7 +39,7 @@ class ActualizarPersonaDTO:
     telefono: Optional[str] = None
     barrio: Optional[str] = None
     municipio: Optional[str] = None
-    genero: Optional[str] = None
+    edad: Optional[str] = None
     estrato: Optional[int] = None
 
     def to_persona(self):
@@ -53,6 +53,6 @@ class ActualizarPersonaDTO:
             telefono=self.telefono,
             barrio=self.barrio,
             municipio=self.municipio,
-            genero=self.genero,
+            edad=self.edad,
             estrato=self.estrato
         )

@@ -25,6 +25,24 @@ import mysql.connector
 # Neo4j
 from neo4j import GraphDatabase
 
+def _obtener_rango_edad(edad):
+    if edad is None:
+        return "desconocido"
+    if edad < 18:
+        return "menor_18"
+    elif edad < 25:
+        return "18_24"
+    elif edad < 35:
+        return "25_34"
+    elif edad < 45:
+        return "35_44"
+    elif edad < 55:
+        return "45_54"
+    elif edad < 65:
+        return "55_64"
+    else:
+        return "65_plus"
+
 def seed_all():
     print("=" * 50)
     print("Cargando datos de prueba en todas las bases de datos...")
@@ -50,25 +68,25 @@ def seed_cassandra():
     session.execute("TRUNCATE personas")
     
     personas = [
-        ("cliente", "Carlos", "Martinez", "carlos@email.com", "3001234567", "El Prado", "Barranquilla", "M", 4),
-        ("cliente", "Ana", "Lopez", "ana@email.com", "3009876543", "Alto Prado", "Barranquilla", "F", 5),
-        ("cliente", "Pedro", "Gomez", "pedro@email.com", "3005551234", "Villa Santos", "Soledad", "M", 3),
-        ("cliente", "Maria", "Rodriguez", "maria@email.com", "3004443210", "Centro", "Barranquilla", "F", 2),
-        ("cliente", "Luis", "Herrera", "luis@email.com", "3003332211", "El Prado", "Barranquilla", "M", 4),
-        ("cliente", "Sofia", "Diaz", "sofia@email.com", "3002221100", "Villa Carolina", "Soledad", "F", 3),
-        ("cliente", "Jorge", "Ramirez", "jorge@email.com", "3001119988", "Recreo", "Barranquilla", "M", 5),
-        ("cliente", "Laura", "Torres", "laura@email.com", "3008887766", "Centro", "Barranquilla", "F", 2),
-        ("empleado", "Diego", "Castro", "diego@freshmart.com", "3007776655", "El Prado", "Barranquilla", "M", 4),
-        ("empleado", "Valentina", "Ruiz", "valentina@freshmart.com", "3006665544", "Alto Prado", "Barranquilla", "F", 5),
+        ("cliente", "Carlos", "Martinez", "carlos@email.com", "3001234567", "El Prado", "Barranquilla", 28, 4),
+        ("cliente", "Ana", "Lopez", "ana@email.com", "3009876543", "Alto Prado", "Barranquilla", 32, 5),
+        ("cliente", "Pedro", "Gomez", "pedro@email.com", "3005551234", "Villa Santos", "Soledad", 45, 3),
+        ("cliente", "Maria", "Rodriguez", "maria@email.com", "3004443210", "Centro", "Barranquilla", 22, 2),
+        ("cliente", "Luis", "Herrera", "luis@email.com", "3003332211", "El Prado", "Barranquilla", 30, 4),
+        ("cliente", "Sofia", "Diaz", "sofia@email.com", "3002221100", "Villa Carolina", "Soledad", 26, 3),
+        ("cliente", "Jorge", "Ramirez", "jorge@email.com", "3001119988", "Recreo", "Barranquilla", 50, 5),
+        ("cliente", "Laura", "Torres", "laura@email.com", "3008887766", "Centro", "Barranquilla", 35, 2),
+        ("empleado", "Diego", "Castro", "diego@freshmart.com", "3007776655", "El Prado", "Barranquilla", 40, 4),
+        ("empleado", "Valentina", "Ruiz", "valentina@freshmart.com", "3006665544", "Alto Prado", "Barranquilla", 29, 5),
     ]
     
     ids = []
-    for tipo, nombre, apellido, email, telefono, barrio, municipio, genero, estrato in personas:
+    for tipo, nombre, apellido, email, telefono, barrio, municipio, edad, estrato in personas:
         pid = uuid_from_time(time.time() + len(ids))
         ids.append(str(pid))
         session.execute(
-            "INSERT INTO personas (id, nombre, apellido, tipo, email, telefono, barrio, municipio, genero, estrato) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (pid, nombre, apellido, tipo, email, telefono, barrio, municipio, genero, estrato)
+            "INSERT INTO personas (id, nombre, apellido, tipo, email, telefono, barrio, municipio, edad, estrato) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (pid, nombre, apellido, tipo, email, telefono, barrio, municipio, edad, estrato)
         )
     
     cluster.shutdown()
@@ -214,6 +232,7 @@ def seed_neo4j():
         
         # Create Persona nodes
         for p in personas:
+            rango_edad = _obtener_rango_edad(p.edad) if hasattr(p, 'edad') and p.edad else None
             session.run("""
                 MERGE (per:Persona {id: $id})
                 SET per.nombre = $nombre,
@@ -221,10 +240,11 @@ def seed_neo4j():
                     per.tipo = $tipo,
                     per.barrio = $barrio,
                     per.municipio = $municipio,
-                    per.genero = $genero,
-                    per.estrato = $estrato
+                    per.edad = $edad,
+                    per.estrato = $estrato,
+                    per.rango_edad = $rango_edad
             """, id=str(p.id), nombre=p.nombre, apellido=p.apellido, tipo=p.tipo,
-                barrio=p.barrio, municipio=p.municipio, genero=p.genero, estrato=p.estrato)
+                barrio=p.barrio, municipio=p.municipio, edad=p.edad, estrato=p.estrato, rango_edad=rango_edad)
         
         # Create Producto nodes
         for prod in productos:
@@ -258,11 +278,11 @@ def seed_neo4j():
             MERGE (p)-[:UBICADO_EN]->(m)
         """)
         
-        # Create COMPARTEN_GENERO relationships
+        # Create MISMO_RANGO_EDAD relationships
         session.run("""
             MATCH (p1:Persona), (p2:Persona)
-            WHERE p1.genero = p2.genero AND p1.id < p2.id
-            MERGE (p1)-[:COMPARTEN_GENERO]-(p2)
+            WHERE p1.rango_edad = p2.rango_edad AND p1.id < p2.id
+            MERGE (p1)-[:MISMO_RANGO_EDAD]-(p2)
         """)
         
         # Create MISMO_ESTRATO relationships

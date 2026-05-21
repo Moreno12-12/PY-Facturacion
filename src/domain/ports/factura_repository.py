@@ -26,6 +26,10 @@ class FacturaRepository(ABC):
         pass
 
     @abstractmethod
+    def eliminar(self, factura_id: int) -> bool:
+        pass
+
+    @abstractmethod
     def get_total_general(self) -> float:
         pass
 

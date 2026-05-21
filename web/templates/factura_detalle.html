@@ -3,8 +3,12 @@
 {% block title %}Factura #{{ factura.factura_id }}{% endblock %}
 
 {% block content %}
-<div class="mb-4">
+<div class="mb-4 d-flex gap-2">
     <a href="/facturas" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <a href="/facturas/eliminar/{{ factura.factura_id }}" class="btn btn-danger"
+       onclick="return confirm('Eliminar esta factura permanentemente?')">
+        <i class="bi bi-trash"></i> Eliminar
+    </a>
 </div>
 
 <div class="row">

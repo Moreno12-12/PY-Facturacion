@@ -25,20 +25,20 @@ class CassandraPersonaRepository(PersonaRepository):
 
     def create(self, persona: Persona) -> Persona:
         self.session.execute(
-            """INSERT INTO personas (id, nombre, apellido, tipo, email, telefono, barrio, municipio, genero, estrato)
+            """INSERT INTO personas (id, nombre, apellido, tipo, email, telefono, barrio, municipio, edad, estrato)
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (persona.id, persona.nombre, persona.apellido, persona.tipo, persona.email,
-             persona.telefono, persona.barrio, persona.municipio, persona.genero, persona.estrato)
+             persona.telefono, persona.barrio, persona.municipio, persona.edad, persona.estrato)
         )
         return persona
 
     def update(self, persona: Persona) -> bool:
         self.session.execute(
             """UPDATE personas SET nombre = %s, apellido = %s, tipo = %s, email = %s,
-               telefono = %s, barrio = %s, municipio = %s, genero = %s, estrato = %s
+               telefono = %s, barrio = %s, municipio = %s, edad = %s, estrato = %s
                WHERE id = %s""",
             (persona.nombre, persona.apellido, persona.tipo, persona.email,
-             persona.telefono, persona.barrio, persona.municipio, persona.genero, persona.estrato, persona.id)
+             persona.telefono, persona.barrio, persona.municipio, persona.edad, persona.estrato, persona.id)
         )
         return True
 
@@ -60,6 +60,6 @@ class CassandraPersonaRepository(PersonaRepository):
             telefono=row.telefono,
             barrio=row.barrio,
             municipio=row.municipio,
-            genero=row.genero,
+            edad=row.edad,
             estrato=row.estrato
         )

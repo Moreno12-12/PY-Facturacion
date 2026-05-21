@@ -35,7 +35,7 @@ def setup():
             telefono TEXT,
             barrio TEXT,
             municipio TEXT,
-            genero TEXT,
+            edad INT,
             estrato INT
         )
     """)

@@ -37,7 +37,7 @@
                 <p><strong>Nombre:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
                 <p><strong>Barrio:</strong> {{ cliente.barrio }}</p>
                 <p><strong>Municipio:</strong> {{ cliente.municipio }}</p>
-                <p><strong>Genero:</strong> {{ cliente.genero }}</p>
+                <p><strong>Edad:</strong> {{ cliente.edad }} años</p>
                 <p><strong>Estrato:</strong> {{ cliente.estrato }}</p>
             </div>
         </div>
@@ -103,7 +103,7 @@
                         <div class="card bg-light">
                             <div class="card-body p-2 text-center">
                                 <strong>{{ cs.nombre }} {{ cs.apellido }}</strong>
-                                <br><small class="text-muted">{{ cs.barrio }}, Estrato {{ cs.estrato }}</small>
+                                <br><small class="text-muted">{{ cs.barrio }}, Estrato {{ cs.estrato }}, {{ cs.edad }} años</small>
                                 <br><small class="text-success">Conexion: {{ cs.conexion }}</small>
                             </div>
                         </div>
